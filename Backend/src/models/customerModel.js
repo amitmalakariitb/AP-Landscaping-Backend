@@ -2,7 +2,7 @@ const admin = require('firebase-admin');
 const db = require('../db');
 
 class CustomerModel {
-    constructor(username, email, mobilenumber, address, carddetails, cvv, paypalid, aectransfer, cardtype, cardholdersname, cardnumber, hashedPassword) {
+    constructor(username, email, mobilenumber, address, carddetails, cvv, paypalid, aectransfer, cardtype, cardholdersname, cardnumber, hashedPassword, googleId) {
         this.username = username || null;
         this.email = email || null;
         this.mobilenumber = mobilenumber || null;
@@ -15,6 +15,7 @@ class CustomerModel {
         this.cardholdersname = cardholdersname || null;
         this.cardnumber = cardnumber || null;
         this.hashedPassword = hashedPassword || null;
+        this.googleId = googleId || null;
     }
 
     async createCustomer() {
@@ -51,6 +52,7 @@ class CustomerModel {
                 return null;
             }
             const customerData = snapshot.docs[0].data();
+            customerData.id = snapshot.docs[0].id;
 
             return customerData;
         } catch (error) {
@@ -58,16 +60,38 @@ class CustomerModel {
             throw error;
         }
     }
-    async getCustomerByField(fieldName, fieldValue) {
+
+    static async getCustomerByField(fieldName, fieldValue) {
         const customersCollection = admin.firestore().collection('customers');
         const querySnapshot = await customersCollection.where(fieldName, '==', fieldValue).get();
 
         if (!querySnapshot.empty) {
-            return querySnapshot.docs[0].data();
+            const customerData = querySnapshot.docs[0].data();
+            customerData.id = querySnapshot.docs[0].id;
+
+            return customerData;
         } else {
             return null;
         }
     }
+
+    static async createCustomerFromGoogle(profile) {
+        const existingCustomerByGoogleId = await this.getCustomerByField('googleId', profile.id);
+        if (existingCustomerByGoogleId) {
+            return existingCustomerByGoogleId;
+        }
+
+        const customerData = {
+            username: profile.displayName,
+            email: profile.emails[0].value,
+            googleId: profile.id,
+        };
+        console.log(customerData)
+        const customersCollection = admin.firestore().collection('customers');
+        const newCustomerRef = await customersCollection.add(customerData);
+        return newCustomerRef.id;
+    }
+
 }
 
 module.exports = CustomerModel;

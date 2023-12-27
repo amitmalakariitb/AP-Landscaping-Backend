@@ -1,5 +1,6 @@
 const express = require('express');
-require('dotenv').config();
+const session = require('express-session');
+const passport = require('../src/middlewares/passport');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -19,6 +20,18 @@ app.use(helmet());
 
 // Use Morgan for logging
 app.use(morgan('combined'));
+
+
+
+app.use(session({
+    secret: 'your-secret-key', // Replace with a secret key
+    resave: false,
+    saveUninitialized: true,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use(express.json());
 app.use('/api', routes);

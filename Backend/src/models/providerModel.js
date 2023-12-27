@@ -25,6 +25,7 @@ class ProviderModel {
         accountnumber,
         services,
         hashedPassword,
+        googleId
     ) {
         this.username = username || null;
         this.uniqueId = uniqueId || null;
@@ -44,7 +45,8 @@ class ProviderModel {
         this.bankname = bankname || null;
         this.accountnumber = accountnumber || null;
         this.services = services || [];
-        this.hashedPassword = hashedPassword || null;;
+        this.hashedPassword = hashedPassword || null;
+        this.googleId = googleId || null;
     }
 
     async createProvider() {
@@ -87,6 +89,7 @@ class ProviderModel {
                 return null;
             }
             const providerData = snapshot.docs[0].data();
+            providerData.id = snapshot.docs[0].id;
 
             return providerData;
         } catch (error) {
@@ -95,13 +98,16 @@ class ProviderModel {
         }
     }
 
-    async getProviderByField(fieldName, fieldValue) {
+    static async getProviderByField(fieldName, fieldValue) {
         try {
             const providersCollection = admin.firestore().collection('providers');
             const querySnapshot = await providersCollection.where(fieldName, '==', fieldValue).get();
 
             if (!querySnapshot.empty) {
-                return querySnapshot.docs[0].data();
+                const providerData = querySnapshot.docs[0].data();
+                providerData.id = querySnapshot.docs[0].id;
+
+                return providerData;
             } else {
                 return null;
             }
@@ -109,6 +115,23 @@ class ProviderModel {
             console.error(`Error getting provider by ${fieldName}:`, error);
             throw error;
         }
+    }
+
+    static async createProviderFromGoogle(profile) {
+        const existingProviderByGoogleId = await this.getProviderByField('googleId', profile.id);
+        if (existingProviderByGoogleId) {
+            return existingProviderByGoogleId;
+        }
+
+        const providerData = {
+            username: profile.displayName,
+            email: profile.emails[0].value,
+            googleId: profile.id,
+        };
+
+        const providersCollection = admin.firestore().collection('providers');
+        const newProviderRef = await providersCollection.add(providerData);
+        return newProviderRef.id;
     }
 }
 
