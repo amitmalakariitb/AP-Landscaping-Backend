@@ -5,6 +5,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const routes = require('./routes');
+const secretKey = process.env.JWT_SECRET;
 
 const app = express();
 const defaultPort = 3000;
@@ -24,7 +25,7 @@ app.use(morgan('combined'));
 
 
 app.use(session({
-    secret: 'your-secret-key', // Replace with a secret key
+    secret: secretKey,
     resave: false,
     saveUninitialized: true,
 }));
