@@ -133,6 +133,27 @@ class ProviderModel {
         const newProviderRef = await providersCollection.add(providerData);
         return newProviderRef.id;
     }
+
+    static async getAllProviders() {
+        try {
+            const providersCollection = admin.firestore().collection('providers');
+            const snapshot = await providersCollection.get();
+
+            const providers = [];
+
+            snapshot.forEach((doc) => {
+                const providerData = doc.data();
+                providerData.id = doc.id;
+                providers.push(providerData);
+            });
+
+            return providers;
+        } catch (error) {
+            console.error('Error getting all providers:', error);
+            throw error;
+        }
+    }
+
 }
 
 module.exports = ProviderModel;

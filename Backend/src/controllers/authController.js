@@ -17,7 +17,6 @@ exports.googleCallback = async (req, res, next) => {
                 loggedUser = await CustomerModel.getCustomerByField('googleId', googleId);
                 if (!loggedUser) {
                     const googleProfile = user;
-                    console.log(googleProfile)
                     loggedUser = await CustomerModel.createCustomerFromGoogle(googleProfile);
                 }
 
@@ -25,10 +24,11 @@ exports.googleCallback = async (req, res, next) => {
                 loggedUser = await providerModel.getProviderByField('googleId', googleId);
                 if (!loggedUser) {
                     const googleProfile = user;
-                    console.log(googleProfile)
                     loggedUser = await providerModel.createProviderFromGoogle(googleProfile);
                 }
             }
+
+            console.log(loggedUser)
 
             res.status(200).json({ "user": loggedUser });
         } catch (error) {

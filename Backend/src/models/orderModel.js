@@ -39,7 +39,7 @@ class OrderModel {
         return newOrderRef.id;
     }
 
-    async updateOrder(orderId, updateData) {
+    static async updateOrder(orderId, updateData) {
         const orderRef = admin.firestore().collection('orders').doc(orderId);
 
         await orderRef.update(updateData);
