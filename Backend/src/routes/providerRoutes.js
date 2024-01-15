@@ -7,4 +7,8 @@ const router = express.Router();
 router.post('/signup', providerController.signup);
 router.post('/login', providerController.login);
 
+router.get('/profile', authenticate, providerController.getProviderProfile);
+router.put('/profile', authenticate, providerController.updateProviderProfile);
+
+
 module.exports = router;

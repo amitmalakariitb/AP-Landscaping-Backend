@@ -76,6 +76,51 @@ class OrderModel {
         }
     }
 
+    static async getPastOrdersByCustomer(customerId) {
+        try {
+            const currentDate = new Date();
+            const timestamp = admin.firestore.Timestamp.fromDate(currentDate);
+            const snapshot = await db.collection('orders')
+                .where('customerId', '==', customerId)
+                .where('date', '<', timestamp.toDate().toISOString())
+                .get();
+            const pastOrders = [];
+            snapshot.forEach(doc => {
+                const orderData = doc.data();
+                orderData.id = doc.id;
+                pastOrders.push(orderData);
+            });
+
+            return pastOrders;
+        } catch (error) {
+            console.error('Error getting past orders by customer:', error);
+            throw error;
+        }
+    }
+
+    static async getUpcomingOrdersByCustomer(customerId) {
+        try {
+            const currentDate = new Date();
+            const timestamp = admin.firestore.Timestamp.fromDate(currentDate);
+            const snapshot = await db.collection('orders')
+                .where('customerId', '==', customerId)
+                .where('date', '>=', timestamp.toDate().toISOString())
+                .get();
+
+            const upcomingOrders = [];
+            snapshot.forEach(doc => {
+                const orderData = doc.data();
+                orderData.id = doc.id;
+                upcomingOrders.push(orderData);
+            });
+
+            return upcomingOrders;
+        } catch (error) {
+            console.error('Error getting upcoming orders by customer:', error);
+            throw error;
+        }
+    }
+
     static async getOrdersByProvider(providerId) {
         try {
             const snapshot = await db.collection('orders').where('providerId', '==', providerId).get();
@@ -90,6 +135,52 @@ class OrderModel {
             return orders;
         } catch (error) {
             console.error('Error getting orders by provider:', error);
+            throw error;
+        }
+    }
+
+    static async getPastOrdersByProvider(providerId) {
+        try {
+            const currentDate = new Date();
+            const timestamp = admin.firestore.Timestamp.fromDate(currentDate);
+            const snapshot = await db.collection('orders')
+                .where('providerId', '==', providerId)
+                .where('date', '<', timestamp.toDate().toISOString())
+                .get();
+
+            const pastOrders = [];
+            snapshot.forEach(doc => {
+                const orderData = doc.data();
+                orderData.id = doc.id;
+                pastOrders.push(orderData);
+            });
+
+            return pastOrders;
+        } catch (error) {
+            console.error('Error getting past orders by provider:', error);
+            throw error;
+        }
+    }
+
+    static async getUpcomingOrdersByProvider(providerId) {
+        try {
+            const currentDate = new Date();
+            const timestamp = admin.firestore.Timestamp.fromDate(currentDate);
+            const snapshot = await db.collection('orders')
+                .where('providerId', '==', providerId)
+                .where('date', '>=', timestamp.toDate().toISOString())
+                .get();
+
+            const upcomingOrders = [];
+            snapshot.forEach(doc => {
+                const orderData = doc.data();
+                orderData.id = doc.id;
+                upcomingOrders.push(orderData);
+            });
+
+            return upcomingOrders;
+        } catch (error) {
+            console.error('Error getting upcoming orders by provider:', error);
             throw error;
         }
     }

@@ -5,12 +5,13 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const routes = require('./routes');
+require('dotenv').config();
+
 const secretKey = process.env.JWT_SECRET;
 
 const app = express();
 const defaultPort = 3000;
 const port = process.env.PORT || defaultPort;
-
 const db = require('./db');
 
 // Enable CORS

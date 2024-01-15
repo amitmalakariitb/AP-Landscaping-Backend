@@ -8,8 +8,8 @@ async function createOrder(req, res) {
             date,
             time,
             expectationNote,
-            customerId,
         } = req.body;
+        const customerId = req.user.customerId
 
         const allProviders = await ProviderModel.getAllProviders();
 
@@ -79,6 +79,29 @@ async function getCustomerOrders(req, res) {
     }
 }
 
+async function getPastOrdersByCustomer(req, res) {
+    try {
+        const customerId = req.user.customerId;
+        console.log(customerId)
+        const pastOrders = await OrderModel.getPastOrdersByCustomer(customerId);
+        res.status(200).json({ pastOrders });
+    } catch (error) {
+        console.error('Error getting past orders by customer:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+async function getUpcomingOrdersByCustomer(req, res) {
+    try {
+        const customerId = req.user.customerId;
+        const upcomingOrders = await OrderModel.getUpcomingOrdersByCustomer(customerId);
+        res.status(200).json({ upcomingOrders });
+    } catch (error) {
+        console.error('Error getting upcoming orders by customer:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 async function getProviderOrders(req, res) {
     try {
         const { providerId } = req.params;
@@ -92,4 +115,27 @@ async function getProviderOrders(req, res) {
     }
 }
 
-module.exports = { createOrder, updateOrder, cancelOrder, getCustomerOrders, getProviderOrders };
+async function getPastOrdersByProvider(req, res) {
+    try {
+        const providerId = req.user.providerId;
+        console.log(providerId)
+        const pastOrders = await OrderModel.getPastOrdersByProvider(providerId);
+        res.status(200).json({ pastOrders });
+    } catch (error) {
+        console.error('Error getting past orders by provider:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+async function getUpcomingOrdersByProvider(req, res) {
+    try {
+        const providerId = req.user.providerId;
+        const upcomingOrders = await OrderModel.getUpcomingOrdersByProvider(providerId);
+        res.status(200).json({ upcomingOrders });
+    } catch (error) {
+        console.error('Error getting upcoming orders by provider:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+module.exports = { createOrder, updateOrder, cancelOrder, getCustomerOrders, getPastOrdersByCustomer, getUpcomingOrdersByCustomer, getProviderOrders, getPastOrdersByProvider, getUpcomingOrdersByProvider };

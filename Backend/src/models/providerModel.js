@@ -98,6 +98,25 @@ class ProviderModel {
         }
     }
 
+    static async getProviderById(id) {
+        try {
+            const providerRef = admin.firestore().collection('providers').doc(id);
+            const snapshot = await providerRef.get();
+
+            if (snapshot.exists) {
+                const providerData = snapshot.data();
+                providerData.id = snapshot.id;
+                return providerData;
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error('Error getting provider by ID:', error);
+            throw error;
+        }
+    }
+
+
     static async getProviderByField(fieldName, fieldValue) {
         try {
             const providersCollection = admin.firestore().collection('providers');
@@ -153,6 +172,23 @@ class ProviderModel {
             throw error;
         }
     }
+
+    static async updateProvider(id, updateData) {
+        try {
+            const providerRef = admin.firestore().collection('providers').doc(id);
+            const snapshot = await providerRef.get();
+            if (snapshot.exists) {
+                await providerRef.update(updateData);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error('Error updating provider:', error);
+            throw error;
+        }
+    }
+
 
 }
 

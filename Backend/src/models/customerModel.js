@@ -60,8 +60,25 @@ class CustomerModel {
             throw error;
         }
     }
+    static async getCustomerById(id) {
+        try {
+            const customerRef = admin.firestore().collection('customers').doc(id);
+            const snapshot = await customerRef.get();
 
-    static async getCustomerByField(fieldName, fieldValue) {
+            if (snapshot.exists) {
+                const customerData = snapshot.data();
+                customerData.id = snapshot.id;
+                return customerData;
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error('Error getting customer by ID:', error);
+            throw error;
+        }
+    }
+
+    async getCustomerByField(fieldName, fieldValue) {
         const customersCollection = admin.firestore().collection('customers');
         const querySnapshot = await customersCollection.where(fieldName, '==', fieldValue).get();
 
@@ -72,6 +89,22 @@ class CustomerModel {
             return customerData;
         } else {
             return null;
+        }
+    }
+
+    static async updateCustomer(id, updateData) {
+        try {
+            const customerRef = admin.firestore().collection('customers').doc(id);
+            const snapshot = await customerRef.get();
+            if (snapshot.exists) {
+                await customerRef.update(updateData);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error('Error updating customer:', error);
+            throw error;
         }
     }
 
