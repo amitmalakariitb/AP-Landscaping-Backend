@@ -1,4 +1,4 @@
-const { OrderModel, ProviderModel } = require('../models');
+const { OrderModel, ProviderModel, NotificationModel } = require('../models');
 
 async function createOrder(req, res) {
     try {
@@ -34,6 +34,23 @@ async function createOrder(req, res) {
     }
 }
 
+async function getOrderById(req, res) {
+    try {
+        const { orderId } = req.params;
+
+        const order = await OrderModel.getOrderById(orderId);
+
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        res.status(200).json({ order });
+    } catch (error) {
+        console.error('Error getting order by ID:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 function getRandomProvider(providers) {
     const randomIndex = Math.floor(Math.random() * providers.length);
     return providers[randomIndex];
@@ -52,6 +69,51 @@ async function updateOrder(req, res) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+async function updateOrderByCustomer(req, res) {
+    try {
+        const { orderId } = req.params;
+        const updateData = req.body;
+
+        const existingOrder = await OrderModel.getOrderById(orderId);
+
+        await OrderModel.updateOrder(orderId, updateData);
+
+        const notificationContent = `Order (${orderId}) has been updated by customer.`;
+        const sender = req.user.customerId;
+        const receiver = existingOrder.providerId;
+
+        await NotificationModel.createNotificationByUsers(sender, receiver, notificationContent);
+
+        res.status(200).json({ message: 'Order updated successfully' });
+    } catch (error) {
+        console.error('Error updating order by customer:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+
+async function updateOrderByProvider(req, res) {
+    try {
+        const { orderId } = req.params;
+        const updateData = req.body;
+
+        const existingOrder = await OrderModel.getOrderById(orderId);
+        await OrderModel.updateOrder(orderId, updateData);
+
+        const notificationContent = `Order (${orderId}) has been updated by provider.`;
+        const sender = req.user.providerId;
+        const receiver = existingOrder.customerId;
+
+        await NotificationModel.createNotificationByUsers(sender, receiver, notificationContent);
+
+        res.status(200).json({ message: 'Order updated successfully' });
+    } catch (error) {
+        console.error('Error updating order by provider:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 
 async function cancelOrder(req, res) {
     try {
@@ -138,4 +200,4 @@ async function getUpcomingOrdersByProvider(req, res) {
     }
 }
 
-module.exports = { createOrder, updateOrder, cancelOrder, getCustomerOrders, getPastOrdersByCustomer, getUpcomingOrdersByCustomer, getProviderOrders, getPastOrdersByProvider, getUpcomingOrdersByProvider };
+module.exports = { createOrder, getOrderById, updateOrder, updateOrderByCustomer, updateOrderByProvider, cancelOrder, getCustomerOrders, getPastOrdersByCustomer, getUpcomingOrdersByCustomer, getProviderOrders, getPastOrdersByProvider, getUpcomingOrdersByProvider };

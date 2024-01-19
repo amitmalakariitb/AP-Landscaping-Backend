@@ -24,6 +24,25 @@ class NotificationModel {
         return newNotificationRef.id;
     }
 
+    static async createNotificationByUsers(sender, receiver, content) {
+        try {
+            const notificationsCollection = admin.firestore().collection('notifications');
+
+            const notificationData = {
+                sender,
+                receiver,
+                content,
+                creationTime: new Date(),
+            };
+
+            const newNotificationRef = await notificationsCollection.add(notificationData);
+            return newNotificationRef.id;
+        } catch (error) {
+            console.error('Error creating notification:', error);
+            throw error;
+        }
+    }
+
     static async updateNotification(notificationId, updateData) {
         const notificationRef = admin.firestore().collection('notifications').doc(notificationId);
 

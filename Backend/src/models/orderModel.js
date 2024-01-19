@@ -12,6 +12,7 @@ class OrderModel {
         providerId,
         isFinished = false,
         isCancelled = false,
+        orderId,
     ) {
         this.serviceType = serviceType || null;
         this.address = address || null;
@@ -22,21 +23,22 @@ class OrderModel {
         this.providerId = providerId || null;
         this.isFinished = isFinished;
         this.isCancelled = isCancelled
+        this.orderId = orderId || null;
     }
 
     async createOrder() {
-        const ordersCollection = admin.firestore().collection('orders');
+        try {
+            const ordersCollection = admin.firestore().collection('orders');
+            const totalOrders = await ordersCollection.get().then(snapshot => snapshot.size + 1);
+            const orderId = `#${totalOrders}`;
+            const orderData = { ...this, orderId };  // Include orderId in the orderData
 
-        const orderData = {};
-
-        Object.entries(this).forEach(([key, value]) => {
-            if (value !== null && value !== undefined) {
-                orderData[key] = value;
-            }
-        });
-
-        const newOrderRef = await ordersCollection.add(orderData);
-        return newOrderRef.id;
+            const newOrderRef = await ordersCollection.add(orderData);
+            return newOrderRef.id;
+        } catch (error) {
+            console.error('Error creating order:', error);
+            throw error;
+        }
     }
 
     static async updateOrder(orderId, updateData) {

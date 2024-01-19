@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { ProviderModel } = require('../models');
+const { ProviderModel, TokenModel } = require('../models');
 
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -93,6 +93,18 @@ async function login(req, res) {
     }
 }
 
+async function logout(req, res) {
+    try {
+        const token = req.header('Authorization').replace('Bearer ', '');
+        await TokenModel.addToBlacklist(token, req.user.providerId, 'provider');
+
+        res.status(200).json({ message: 'Logout successful' });
+    } catch (error) {
+        console.error('Error during logout:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 
 async function getProviderProfile(req, res) {
     try {
@@ -162,4 +174,4 @@ async function updateProviderProfile(req, res) {
 
 
 
-module.exports = { signup, login, getProviderProfile, updateProviderProfile };
+module.exports = { signup, login, logout, getProviderProfile, updateProviderProfile };
