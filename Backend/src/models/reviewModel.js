@@ -2,9 +2,10 @@ const admin = require('firebase-admin');
 const db = require('../db');
 
 class ReviewModel {
-    constructor(customerId, providerId, orderId, rating, comments) {
-        this.customerId = customerId || null;
+    constructor(reviewerId, providerId, customerId, orderId, rating, comments) {
+        this.reviewerId = reviewerId || null;
         this.providerId = providerId || null;
+        this.customerId = customerId || null;
         this.orderId = orderId || null;
         this.rating = rating || null;
         this.comments = comments || null;
@@ -50,8 +51,8 @@ class ReviewModel {
         await reviewRef.delete();
     }
 
-    static async getReviewsByCustomer(customerId) {
-        const snapshot = await db.collection('reviews').where('customerId', '==', customerId).get();
+    static async getReviewsByReviewer(reviewerId) {
+        const snapshot = await db.collection('reviews').where('reviewerId', '==', reviewerId).get();
 
         const reviews = [];
         snapshot.forEach(doc => {
