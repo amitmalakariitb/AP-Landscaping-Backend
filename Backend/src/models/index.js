@@ -4,6 +4,7 @@ const OrderModel = require('./orderModel')
 const NotificationModel = require('./notificationModel')
 const TokenModel = require('./tokenModel')
 const ReviewModel = require('./reviewModel')
+const CrewModel = require('./crewModel')
 
 module.exports = {
     CustomerModel,
@@ -12,4 +13,5 @@ module.exports = {
     NotificationModel,
     TokenModel,
     ReviewModel,
+    CrewModel,
 };

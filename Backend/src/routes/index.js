@@ -5,6 +5,7 @@ const authRoutes = require('./authRoutes');
 const orderRoutes = require('./orderRoutes')
 const notificationRoutes = require('./notificationRoutes');
 const reviewRoutes = require('./reviewRoutes')
+const crewRoutes = require('./crewRoutes')
 const { auth } = require('firebase-admin');
 
 const router = express.Router();
@@ -15,5 +16,6 @@ router.use('/user', authRoutes);
 router.use('/orders', orderRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/reviews', reviewRoutes)
+router.use('/crews', crewRoutes)
 
 module.exports = router;
