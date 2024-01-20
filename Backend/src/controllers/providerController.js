@@ -122,6 +122,23 @@ async function getProviderProfile(req, res) {
     }
 }
 
+
+async function getProviderDetails(req, res) {
+    try {
+        const providerId = req.params.providerId;
+        const provider = await ProviderModel.getProviderById(providerId);
+
+        if (!provider) {
+            return res.status(404).json({ error: 'Provider not found' });
+        }
+
+        res.status(200).json({ provider });
+    } catch (error) {
+        console.error('Error getting provider profile:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 async function updateProviderProfile(req, res) {
     try {
         const providerId = req.user.providerId;
@@ -174,4 +191,4 @@ async function updateProviderProfile(req, res) {
 
 
 
-module.exports = { signup, login, logout, getProviderProfile, updateProviderProfile };
+module.exports = { signup, login, logout, getProviderProfile, getProviderDetails, updateProviderProfile };

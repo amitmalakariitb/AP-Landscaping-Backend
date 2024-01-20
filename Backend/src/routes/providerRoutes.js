@@ -8,6 +8,7 @@ router.post('/signup', providerController.signup);
 router.post('/login', providerController.login);
 router.post('/logout', authenticate, providerController.logout);
 router.get('/profile', authenticate, providerController.getProviderProfile);
+router.get('/profile/:providerId', authenticate, providerController.getProviderDetails);
 router.put('/profile', authenticate, providerController.updateProviderProfile);
 
 

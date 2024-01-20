@@ -107,6 +107,23 @@ async function getCustomerProfile(req, res) {
     }
 }
 
+async function getCustomerDetails(req, res) {
+    try {
+        const customerId = req.params.customerId;
+
+        const customer = await CustomerModel.getCustomerById(customerId);
+
+        if (!customer) {
+            return res.status(404).json({ error: 'Customer not found' });
+        }
+
+        res.status(200).json({ customer });
+    } catch (error) {
+        console.error('Error getting customer profile:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 async function updateCustomerProfile(req, res) {
     try {
         const customerId = req.user.customerId;
@@ -154,5 +171,5 @@ async function updateCustomerProfile(req, res) {
     }
 }
 
-module.exports = { signup, login, logout, getCustomerProfile, updateCustomerProfile };
+module.exports = { signup, login, logout, getCustomerProfile, getCustomerDetails, updateCustomerProfile };
 

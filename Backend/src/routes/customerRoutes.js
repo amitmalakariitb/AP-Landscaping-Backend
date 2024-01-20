@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/signup', customerController.signup);
 router.post('/login', customerController.login);
 router.get('/profile', authenticate, customerController.getCustomerProfile);
+router.get('/profile/:customerId', authenticate, customerController.getCustomerDetails);
 router.put('/profile', authenticate, customerController.updateCustomerProfile);
 router.post('/logout', authenticate, customerController.logout);
 
