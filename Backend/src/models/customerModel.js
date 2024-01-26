@@ -60,6 +60,22 @@ class CustomerModel {
             throw error;
         }
     }
+    static async getCustomerByPhoneNumber(mobilenumber) {
+        try {
+            const snapshot = await db.collection('customers').where('mobilenumber', '==', mobilenumber).get();
+
+            if (snapshot.empty) {
+                return null;
+            }
+            const customerData = snapshot.docs[0].data();
+            customerData.id = snapshot.docs[0].id;
+
+            return customerData;
+        } catch (error) {
+            console.error('Error getting customer by mobile number:', error);
+            throw error;
+        }
+    }
     static async getCustomerById(id) {
         try {
             const customerRef = admin.firestore().collection('customers').doc(id);

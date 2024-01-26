@@ -6,7 +6,7 @@ const orderRoutes = require('./orderRoutes')
 const notificationRoutes = require('./notificationRoutes');
 const reviewRoutes = require('./reviewRoutes')
 const crewRoutes = require('./crewRoutes')
-const { auth } = require('firebase-admin');
+const forgotPasswordRoutes = require('./forgotPasswordRoutes')
 
 const router = express.Router();
 
@@ -17,5 +17,6 @@ router.use('/orders', orderRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/reviews', reviewRoutes)
 router.use('/crews', crewRoutes)
+router.use('/forgot-password', forgotPasswordRoutes)
 
 module.exports = router;
