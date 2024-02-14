@@ -35,7 +35,7 @@ async function forgotPasswordEmail(req, res) {
 
         await sendOtpEmail(customer.email, otp);
 
-        res.status(200).json({ message: 'Reset token and OTP sent successfully. Check your email.' });
+        res.status(200).json({ message: 'Reset token and OTP sent successfully. Check your email.', resetToken: resetToken });
     } catch (error) {
         console.error('Error generating reset token:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -116,7 +116,7 @@ async function forgotPasswordPhone(req, res) {
 
         await sendOtpSMS(formattedPhoneNumber, otp);
 
-        res.status(200).json({ message: 'Reset token and OTP sent successfully. Check your phone.' });
+        res.status(200).json({ message: 'Reset token and OTP sent successfully. Check your phone.', resetToken: resetToken });
     } catch (error) {
         console.error('Error generating reset token:', error);
         res.status(500).json({ error: 'Internal Server Error' });

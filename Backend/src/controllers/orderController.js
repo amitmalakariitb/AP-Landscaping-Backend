@@ -1,4 +1,4 @@
-const { OrderModel, ProviderModel, NotificationModel } = require('../models');
+const { OrderModel, ProviderModel, NotificationModel, SuperuserModel } = require('../models');
 
 async function createOrder(req, res) {
     try {
@@ -33,6 +33,35 @@ async function createOrder(req, res) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+
+async function checkIfSuperuser(superuserId) {
+
+    const superuser = await SuperuserModel.getSuperuserById(superuserId);
+
+    return !!superuser;
+}
+
+async function assignProviderToOrder(req, res) {
+    try {
+        const { orderId, providerId } = req.body;
+
+        const isSuperuser = await checkIfSuperuser(req.user.superuserId);
+
+        if (!isSuperuser) {
+            return res.status(403).json({ error: 'Unauthorized - Only superusers can assign providers to orders' });
+        }
+
+        await OrderModel.updateOrder(orderId, { providerId });
+
+        res.status(200).json({ message: 'Provider assigned to order successfully' });
+    } catch (error) {
+        console.error('Error assigning provider to order:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+
 
 async function getOrderById(req, res) {
     try {
@@ -115,18 +144,43 @@ async function updateOrderByProvider(req, res) {
 }
 
 
-async function cancelOrder(req, res) {
+async function cancelOrderByCustomer(req, res) {
     try {
         const { orderId } = req.params;
+        const customerId = req.user.customerId;
+        const order = await OrderModel.getOrderById(orderId);
+        if (!order || order.customerId !== customerId) {
+            return res.status(404).json({ error: 'Order not found or unauthorized' });
+        }
 
         await OrderModel.updateOrder(orderId, { isCancelled: true });
 
         res.status(200).json({ message: 'Order cancelled successfully' });
     } catch (error) {
-        console.error('Error cancelling order:', error);
+        console.error('Error cancelling order by customer:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+async function cancelOrderByProvider(req, res) {
+    try {
+        const { orderId } = req.params;
+        const providerId = req.user.providerId;
+
+        const order = await OrderModel.getOrderById(orderId);
+        if (!order || order.providerId !== providerId) {
+            return res.status(404).json({ error: 'Order not found or unauthorized' });
+        }
+
+        await OrderModel.updateOrder(orderId, { isCancelled: true, providerId: null });
+
+        res.status(200).json({ message: 'Order cancelled successfully' });
+    } catch (error) {
+        console.error('Error cancelling order by provider:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 
 async function getCustomerOrders(req, res) {
     try {
@@ -176,6 +230,28 @@ async function getProviderOrders(req, res) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+async function acceptOrDeclineOrder(req, res) {
+    try {
+        const { orderId } = req.params;
+        const { action } = req.body;
+
+        if (action !== 'accept' && action !== 'decline') {
+            return res.status(400).json({ error: 'Invalid action. Must be either "accept" or "decline".' });
+        }
+
+        const updateData = {
+            providerId: action === 'accept' ? req.user.providerId : null,
+        };
+
+        await updateOrder(orderId, updateData);
+
+        res.status(200).json({ message: `Order ${action === 'accept' ? 'accepted' : 'declined'} successfully` });
+    } catch (error) {
+        console.error('Error accepting/declining order:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 
 async function getPastOrdersByProvider(req, res) {
     try {
@@ -198,6 +274,17 @@ async function getUpcomingOrdersByProvider(req, res) {
         console.error('Error getting upcoming orders by provider:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
+
 }
 
-module.exports = { createOrder, getOrderById, updateOrder, updateOrderByCustomer, updateOrderByProvider, cancelOrder, getCustomerOrders, getPastOrdersByCustomer, getUpcomingOrdersByCustomer, getProviderOrders, getPastOrdersByProvider, getUpcomingOrdersByProvider };
+async function getOrdersWithNoProvider(req, res) {
+    try {
+        const orders = await OrderModel.getOrdersWithNoProvider();
+        res.status(200).json({ orders });
+    } catch (error) {
+        console.error('Error getting orders with no provider:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+module.exports = { createOrder, getOrderById, updateOrder, updateOrderByCustomer, updateOrderByProvider, cancelOrderByCustomer, cancelOrderByProvider, getCustomerOrders, getPastOrdersByCustomer, getUpcomingOrdersByCustomer, getProviderOrders, getPastOrdersByProvider, getUpcomingOrdersByProvider, getOrdersWithNoProvider, assignProviderToOrder, acceptOrDeclineOrder };
