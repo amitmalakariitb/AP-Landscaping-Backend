@@ -235,15 +235,16 @@ async function acceptOrDeclineOrder(req, res) {
         const { orderId } = req.params;
         const { action } = req.body;
 
-        if (action !== 'accept' && action !== 'decline') {
-            return res.status(400).json({ error: 'Invalid action. Must be either "accept" or "decline".' });
-        }
+        const orderRef = admin.firestore().collection('orders').doc(orderId);
+        const snapshot = await orderRef.get();
+        const orderData = snapshot.data();
 
         const updateData = {
-            providerId: action === 'accept' ? req.user.providerId : null,
+            providerId: action === 'accept' ? this.providerId : null,
+            isAcceptedByProvider: action === 'accept' ? true : false
         };
 
-        await updateOrder(orderId, updateData);
+        await orderRef.update(updateData);
 
         res.status(200).json({ message: `Order ${action === 'accept' ? 'accepted' : 'declined'} successfully` });
     } catch (error) {

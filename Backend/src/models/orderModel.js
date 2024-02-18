@@ -33,7 +33,7 @@ class OrderModel {
             const ordersCollection = admin.firestore().collection('orders');
             const totalOrders = await ordersCollection.get().then(snapshot => snapshot.size + 1);
             const orderId = `#${totalOrders}`;
-            const orderData = { ...this, orderId };  // Include orderId in the orderData
+            const orderData = { ...this, orderId, isAcceptedByProvider: false };
 
             const newOrderRef = await ordersCollection.add(orderData);
             return newOrderRef.id;
