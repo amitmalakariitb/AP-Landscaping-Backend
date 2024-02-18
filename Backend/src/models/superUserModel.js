@@ -1,6 +1,6 @@
 const db = require('../db');
 
-class SuperuserModel {
+class SuperUserModel {
     constructor(username, email, hashedPassword) {
         this.username = username;
         this.email = email;
@@ -58,4 +58,4 @@ class SuperuserModel {
     }
 }
 
-module.exports = SuperuserModel;
+module.exports = SuperUserModel;

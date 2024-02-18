@@ -10,10 +10,11 @@ async function signup(req, res) {
             username,
             email,
             password,
-            token: providedToken
+            token: providedToken,
+            superuserToken
         } = req.body;
 
-        if (providedToken !== jwtSecret) {
+        if (providedToken !== jwtSecret || superuserToken !== process.env.SUPERUSER_TOKEN) {
             return res.status(400).json({ error: 'Invalid token provided' });
         }
 

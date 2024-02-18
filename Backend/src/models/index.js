@@ -5,6 +5,7 @@ const NotificationModel = require('./notificationModel')
 const TokenModel = require('./tokenModel')
 const ReviewModel = require('./reviewModel')
 const CrewModel = require('./crewModel')
+const SuperuserModel = require('./superUserModel')
 
 module.exports = {
     CustomerModel,
@@ -14,4 +15,5 @@ module.exports = {
     TokenModel,
     ReviewModel,
     CrewModel,
+    SuperuserModel,
 };

@@ -20,7 +20,7 @@ router.use('/notifications', notificationRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/crews', crewRoutes);
 router.use('/forgot-password', forgotPasswordRoutes);
-router.use('./super-user', superUserRoutes)
+router.use('/super-user', superUserRoutes)
 router.use('/location', locationRoutes)
 
 module.exports = router;

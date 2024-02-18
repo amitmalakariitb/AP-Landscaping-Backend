@@ -1,5 +1,5 @@
-const { OrderModel, ProviderModel, NotificationModel, SuperuserModel } = require('../models');
-
+const { OrderModel, NotificationModel, SuperuserModel } = require('../models');
+const admin = require('firebase-admin');
 async function createOrder(req, res) {
     try {
         const {
@@ -9,11 +9,8 @@ async function createOrder(req, res) {
             time,
             expectationNote,
         } = req.body;
+
         const customerId = req.user.customerId
-
-        const allProviders = await ProviderModel.getAllProviders();
-
-        const randomProvider = getRandomProvider(allProviders);
 
         const newOrder = new OrderModel(
             serviceType,
@@ -22,7 +19,6 @@ async function createOrder(req, res) {
             time,
             expectationNote,
             customerId,
-            randomProvider.id
         );
 
         const orderId = await newOrder.createOrder();
@@ -78,11 +74,6 @@ async function getOrderById(req, res) {
         console.error('Error getting order by ID:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-}
-
-function getRandomProvider(providers) {
-    const randomIndex = Math.floor(Math.random() * providers.length);
-    return providers[randomIndex];
 }
 
 async function updateOrder(req, res) {
@@ -232,15 +223,14 @@ async function getProviderOrders(req, res) {
 }
 async function acceptOrDeclineOrder(req, res) {
     try {
-        const { orderId } = req.params;
-        const { action } = req.body;
+        const { orderId, action } = req.body;
 
         const orderRef = admin.firestore().collection('orders').doc(orderId);
         const snapshot = await orderRef.get();
         const orderData = snapshot.data();
 
         const updateData = {
-            providerId: action === 'accept' ? this.providerId : null,
+            providerId: action === 'accept' ? req.user.providerId : null,
             isAcceptedByProvider: action === 'accept' ? true : false
         };
 
