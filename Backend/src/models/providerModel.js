@@ -117,7 +117,7 @@ class ProviderModel {
     }
 
 
-    static async getProviderByField(fieldName, fieldValue) {
+    async getProviderByField(fieldName, fieldValue) {
         try {
             const providersCollection = admin.firestore().collection('providers');
             const querySnapshot = await providersCollection.where(fieldName, '==', fieldValue).get();
