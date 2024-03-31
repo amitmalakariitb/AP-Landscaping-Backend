@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { SuperuserModel, TokenModel, CustomerModel, ProviderModel } = require('../models');
+const { SuperuserModel, TokenModel, CustomerModel, ProviderModel, OrderModel } = require('../models');
 
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -99,4 +99,17 @@ async function getAllProviders(req, res) {
     }
 }
 
-module.exports = { signup, login, logout, getAllCustomers, getAllProviders };
+async function getOrdersWithNoProvider(req, res) {
+    console.log("hi")
+    try {
+        console.log("hi")
+        const orders = await OrderModel.getOrdersWithNoProvider();
+        res.status(200).json({ orders });
+    } catch (error) {
+        console.log("hi")
+        console.error('Error getting orders with no provider:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+module.exports = { signup, login, logout, getAllCustomers, getAllProviders, getOrdersWithNoProvider };

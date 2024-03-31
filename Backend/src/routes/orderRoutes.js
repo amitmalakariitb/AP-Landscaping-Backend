@@ -17,7 +17,6 @@ router.get('/upcoming/customer', authenticate, OrderController.getUpcomingOrders
 router.get('/providerOrders/:providerId', authenticate, OrderController.getProviderOrders)
 router.get('/past/provider', authenticate, OrderController.getPastOrdersByProvider);
 router.get('/upcoming/provider', authenticate, OrderController.getUpcomingOrdersByProvider);
-router.get('/no-provider', authenticate, OrderController.getOrdersWithNoProvider);
 router.post('/assign-provider', authenticate, OrderController.assignProviderToOrder);
 router.put('/accept', authenticate, OrderController.acceptOrDeclineOrder);
 module.exports = router;
