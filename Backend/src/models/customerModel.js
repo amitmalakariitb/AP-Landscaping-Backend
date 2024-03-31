@@ -108,6 +108,25 @@ class CustomerModel {
         }
     }
 
+    static async getAllCustomers() {
+        try {
+            const customersCollection = admin.firestore().collection('customers');
+            const snapshot = await customersCollection.get();
+            const customers = [];
+
+            snapshot.forEach(doc => {
+                const customerData = doc.data();
+                customerData.id = doc.id;
+                customers.push(customerData);
+            });
+
+            return customers;
+        } catch (error) {
+            console.error('Error getting all customers:', error);
+            throw error;
+        }
+    }
+
     static async updateCustomer(id, updateData) {
         try {
             const customerRef = admin.firestore().collection('customers').doc(id);
