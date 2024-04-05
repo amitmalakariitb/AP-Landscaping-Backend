@@ -110,6 +110,27 @@ class ChannelModel {
         }
     }
 
+    static async getAllChannelsForUser(userId) {
+        try {
+            // Query channels collection to find all channels where the user is a participant
+            const snapshot = await admin.firestore().collection('channels').where('users', 'array-contains', userId).get();
+
+            // Extract channel data from the snapshot
+            const channels = [];
+            snapshot.forEach(doc => {
+                const channelData = doc.data();
+                channelData.id = doc.id;
+                channels.push(channelData);
+            });
+
+            return channels;
+        } catch (error) {
+            console.error('Error getting channels for user:', error);
+            throw error;
+        }
+    }
 }
+
+
 
 module.exports = ChannelModel;

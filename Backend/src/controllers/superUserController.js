@@ -100,13 +100,10 @@ async function getAllProviders(req, res) {
 }
 
 async function getOrdersWithNoProvider(req, res) {
-    console.log("hi")
     try {
-        console.log("hi")
         const orders = await OrderModel.getOrdersWithNoProvider();
         res.status(200).json({ orders });
     } catch (error) {
-        console.log("hi")
         console.error('Error getting orders with no provider:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
