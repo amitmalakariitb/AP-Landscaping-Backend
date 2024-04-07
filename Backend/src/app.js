@@ -5,6 +5,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const routes = require('./routes');
+const http = require('http');
+const { initWebSocket } = require('../src/middlewares/webSocket');
 require('dotenv').config();
 
 const secretKey = process.env.JWT_SECRET;
@@ -13,6 +15,11 @@ const app = express();
 const defaultPort = 3000;
 const port = process.env.PORT || defaultPort;
 const db = require('./db');
+
+const server = http.createServer(app);
+
+// Initialize WebSocket
+initWebSocket(server);
 
 // Enable CORS
 app.use(cors());

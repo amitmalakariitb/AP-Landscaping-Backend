@@ -1,5 +1,12 @@
 const admin = require('firebase-admin');
+const { initWebSocket } = require('../middlewares/webSocket');
 
+
+let io;
+
+function initializeWebSocket(server) {
+    io = initWebSocket(server);
+}
 class ChannelModel {
     constructor(users, messages) {
         this.users = users || [];
@@ -8,10 +15,11 @@ class ChannelModel {
 
     async createChannel() {
         try {
-            const { users, messages } = this; // Extract users and messages from the ChannelModel instance
-            const channelId = users.sort().join('_'); // Concatenate sender and receiver IDs and sort them
+            const { users, messages } = this;
+            const channelId = users.sort().join('_');
             const channelsCollection = admin.firestore().collection('channels');
-            const newChannelRef = await channelsCollection.doc(channelId).set({ users, messages }); // Set document with concatenated IDs as the document ID
+            const newChannelRef = await channelsCollection.doc(channelId).set({ users, messages });
+            io.emit('channelCreated', { channelId, users, messages });
             return channelId;
         } catch (error) {
             console.error('Error creating channel:', error);
@@ -112,10 +120,8 @@ class ChannelModel {
 
     static async getAllChannelsForUser(userId) {
         try {
-            // Query channels collection to find all channels where the user is a participant
             const snapshot = await admin.firestore().collection('channels').where('users', 'array-contains', userId).get();
 
-            // Extract channel data from the snapshot
             const channels = [];
             snapshot.forEach(doc => {
                 const channelData = doc.data();

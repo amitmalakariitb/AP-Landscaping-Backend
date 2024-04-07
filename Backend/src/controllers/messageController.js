@@ -1,6 +1,13 @@
+const { initWebSocket } = require('../middlewares/webSocket');
 const { MessageModel } = require('../models');
 const { ChannelModel } = require('../models');
 
+
+let io;
+
+function initializeWebSocket(server) {
+    io = initWebSocket(server);
+}
 async function sendMessage(req, res) {
     try {
         const { senderId, receiverId, content } = req.body;
@@ -26,6 +33,14 @@ async function sendMessage(req, res) {
         const messageId = await newMessage.sendMessage(channelId);
 
         await ChannelModel.addMessageToChannel(channelId, messageId);
+        io.emit('newMessage', {
+            messageId,
+            senderId,
+            receiverId,
+            content,
+            timestamp: newMessage.timestamp
+        });
+
 
         res.status(201).json({ messageId, channelId, message: 'Message sent successfully' });
     } catch (error) {
@@ -39,6 +54,7 @@ async function deleteMessage(req, res) {
         const { messageId, channelId } = req.body;
         const deleted = await MessageModel.deleteMessage(messageId, channelId);
         if (deleted) {
+            io.emit('deletedMessage', messageId);
             res.status(200).json({ message: 'Message deleted successfully' });
         } else {
             res.status(404).json({ error: 'Message not found' });
@@ -54,6 +70,12 @@ async function updateMessage(req, res) {
         const { channelId, messageId, updateData } = req.body;
         const updated = await MessageModel.updateMessage(channelId, messageId, updateData);
         if (updated) {
+            io.emit('updatedMessage', {
+                messageId,
+                channelId,
+                updateData
+            });
+
             res.status(200).json({ message: 'Message updated successfully' });
         } else {
             res.status(404).json({ error: 'Message not found' });
