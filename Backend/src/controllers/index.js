@@ -6,7 +6,7 @@ const reviewController = require('./reviewController');
 const crewController = require('./crewController');
 const superUserController = require('./superUserController');
 const messageController = require('./messageController')
-
+const paymentController = require('./paymentController')
 
 module.exports = {
     customerController,
@@ -16,5 +16,6 @@ module.exports = {
     reviewController,
     crewController,
     superUserController,
-    messageController
+    messageController,
+    paymentController,
 };
