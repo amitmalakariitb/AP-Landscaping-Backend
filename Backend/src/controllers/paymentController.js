@@ -24,13 +24,13 @@ async function initiateCheckout(req, res) {
             // success_url: `${process.env.CLIENT_URL}/success?orderId=${orderId}`, 
             // cancel_url: `${process.env.CLIENT_URL}/cancel?orderId=${orderId}`,
             success_url: 'https://www.google.com',
-            cancel_url: 'https://www.google.com',
+            cancel_url: 'https://www.wikipedia.org/',
 
         });
 
         const updatedOrder = await OrderModel.updateOrder(orderId, { stripePaymentSessionId: session.id });
 
-        res.status(200).json({ sessionId: session.id });
+        res.status(200).json({ sessionId: session });
     } catch (error) {
         console.error('Error initiating checkout:', error);
         res.status(500).json({ error: 'Internal Server Error' });
