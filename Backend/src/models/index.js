@@ -6,6 +6,8 @@ const TokenModel = require('./tokenModel')
 const ReviewModel = require('./reviewModel')
 const CrewModel = require('./crewModel')
 const SuperuserModel = require('./superUserModel')
+const MessageModel = require('./messageModel')
+const ChannelModel = require('./channelModel')
 
 module.exports = {
     CustomerModel,
@@ -16,4 +18,6 @@ module.exports = {
     ReviewModel,
     CrewModel,
     SuperuserModel,
+    MessageModel,
+    ChannelModel,
 };

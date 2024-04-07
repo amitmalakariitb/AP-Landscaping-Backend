@@ -268,14 +268,6 @@ async function getUpcomingOrdersByProvider(req, res) {
 
 }
 
-async function getOrdersWithNoProvider(req, res) {
-    try {
-        const orders = await OrderModel.getOrdersWithNoProvider();
-        res.status(200).json({ orders });
-    } catch (error) {
-        console.error('Error getting orders with no provider:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-}
 
-module.exports = { createOrder, getOrderById, updateOrder, updateOrderByCustomer, updateOrderByProvider, cancelOrderByCustomer, cancelOrderByProvider, getCustomerOrders, getPastOrdersByCustomer, getUpcomingOrdersByCustomer, getProviderOrders, getPastOrdersByProvider, getUpcomingOrdersByProvider, getOrdersWithNoProvider, assignProviderToOrder, acceptOrDeclineOrder };
+
+module.exports = { createOrder, getOrderById, updateOrder, updateOrderByCustomer, updateOrderByProvider, cancelOrderByCustomer, cancelOrderByProvider, getCustomerOrders, getPastOrdersByCustomer, getUpcomingOrdersByCustomer, getProviderOrders, getPastOrdersByProvider, getUpcomingOrdersByProvider, assignProviderToOrder, acceptOrDeclineOrder };

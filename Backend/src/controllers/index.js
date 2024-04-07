@@ -4,6 +4,9 @@ const OrderController = require('./orderController');
 const notificationController = require('./notificationController');
 const reviewController = require('./reviewController');
 const crewController = require('./crewController');
+const superUserController = require('./superUserController');
+const messageController = require('./messageController')
+const paymentController = require('./paymentController')
 
 module.exports = {
     customerController,
@@ -12,4 +15,7 @@ module.exports = {
     notificationController,
     reviewController,
     crewController,
+    superUserController,
+    messageController,
+    paymentController,
 };

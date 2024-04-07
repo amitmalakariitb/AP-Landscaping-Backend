@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { SuperuserModel, TokenModel } = require('../models');
+const { SuperuserModel, TokenModel, CustomerModel, ProviderModel, OrderModel } = require('../models');
 
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -79,4 +79,34 @@ async function logout(req, res) {
     }
 }
 
-module.exports = { signup, login, logout };
+async function getAllCustomers(req, res) {
+    try {
+        const customers = await CustomerModel.getAllCustomers();
+        res.status(200).json({ customers });
+    } catch (error) {
+        console.error('Error getting all customers:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+async function getAllProviders(req, res) {
+    try {
+        const providers = await ProviderModel.getAllProviders();
+        res.status(200).json({ providers });
+    } catch (error) {
+        console.error('Error getting all providers:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+async function getOrdersWithNoProvider(req, res) {
+    try {
+        const orders = await OrderModel.getOrdersWithNoProvider();
+        res.status(200).json({ orders });
+    } catch (error) {
+        console.error('Error getting orders with no provider:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+module.exports = { signup, login, logout, getAllCustomers, getAllProviders, getOrdersWithNoProvider };

@@ -1,6 +1,13 @@
 const admin = require('firebase-admin');
+require('dotenv').config();
 
-const serviceAccount = require('../ap-landscaping-firebase-adminsdk-51cc5-ae3931fc8f.json');
+const firebaseAdminSdkPath = process.env.FIREBASE_ADMIN_SDK_PATH;
+
+if (!firebaseAdminSdkPath) {
+    throw new Error('FIREBASE_ADMIN_SDK_PATH environment variable is not defined.');
+}
+
+const serviceAccount = require(firebaseAdminSdkPath);
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),

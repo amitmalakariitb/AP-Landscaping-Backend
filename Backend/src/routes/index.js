@@ -9,6 +9,8 @@ const crewRoutes = require('./crewRoutes')
 const forgotPasswordRoutes = require('./forgotPasswordRoutes')
 const superUserRoutes = require('./superUserRoutes')
 const locationRoutes = require('./locationRoutes')
+const messageRoutes = require('./messageRoutes')
+const paymentRoutes = require('./paymentRoutes')
 
 const router = express.Router();
 
@@ -22,5 +24,7 @@ router.use('/crews', crewRoutes);
 router.use('/forgot-password', forgotPasswordRoutes);
 router.use('/super-user', superUserRoutes)
 router.use('/location', locationRoutes)
+router.use('/message', messageRoutes)
+router.use('/payment', paymentRoutes)
 
 module.exports = router;

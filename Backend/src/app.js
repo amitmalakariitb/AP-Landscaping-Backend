@@ -38,6 +38,9 @@ app.use(passport.session());
 app.use(express.json());
 app.use('/api', routes);
 
+app.get('/', (req, res) => {
+    res.send('Welcome to the Ap_Landscaping Backend, You can access the urls defined in the backend through this domain.');
+});
 
 
 // Start the server
