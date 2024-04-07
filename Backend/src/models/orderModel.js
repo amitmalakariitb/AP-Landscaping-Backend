@@ -14,6 +14,7 @@ class OrderModel {
         isCancelled = false,
         isRescheduled = false,
         orderId,
+        stripePaymentSessionId,
     ) {
         this.serviceType = serviceType || null;
         this.address = address || null;
@@ -26,6 +27,7 @@ class OrderModel {
         this.isCancelled = isCancelled;
         this.isRescheduled = isRescheduled;
         this.orderId = orderId || null;
+        this.stripePaymentSessionId = stripePaymentSessionId || null;
     }
 
     async createOrder() {
