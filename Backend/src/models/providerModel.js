@@ -97,6 +97,22 @@ class ProviderModel {
             throw error;
         }
     }
+    static async getProviderByPhoneNumber(mobilenumber) {
+        try {
+            const snapshot = await db.collection('providers').where('mobilenumber', '==', mobilenumber).get();
+
+            if (snapshot.empty) {
+                return null;
+            }
+            const providerData = snapshot.docs[0].data();
+            providerData.id = snapshot.docs[0].id;
+
+            return providerData;
+        } catch (error) {
+            console.error('Error getting customer by mobile number:', error);
+            throw error;
+        }
+    }
 
     static async getProviderById(id) {
         try {
