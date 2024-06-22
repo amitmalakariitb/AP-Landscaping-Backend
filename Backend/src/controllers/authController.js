@@ -1,6 +1,8 @@
 const passport = require('../middlewares/passport');
 const appleSignin = require('apple-signin-auth');
 const jwt = require('jsonwebtoken');
+const uuid = require('uuid');
+const session = require('express-session');
 const CustomerModel = require('../models/customerModel');
 const ProviderModel = require('../models/providerModel');
 require('dotenv').config();
@@ -51,9 +53,12 @@ exports.appleLogin = async (req, res) => {
     const { identityToken, role } = req.body;
 
     try {
+        const nonce = uuid.v4(); // Generate a unique nonce
+        req.session.nonce = nonce;
+
         const appleProfile = await appleSignin.verifyIdToken(identityToken, {
             audience: process.env.CLIENT_ID, // Ensure you have the client ID set in your environment variables
-            nonce: 'nonce',
+            nonce,
         });
 
         const { sub: appleId, email, name } = appleProfile;
