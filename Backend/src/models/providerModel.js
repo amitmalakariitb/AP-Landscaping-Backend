@@ -133,7 +133,7 @@ class ProviderModel {
     }
 
 
-    async getProviderByField(fieldName, fieldValue) {
+    static async getProviderByField(fieldName, fieldValue) {
         try {
             const providersCollection = admin.firestore().collection('providers');
             const querySnapshot = await providersCollection.where(fieldName, '==', fieldValue).get();
@@ -162,6 +162,23 @@ class ProviderModel {
             username: profile.displayName,
             email: profile.emails[0].value,
             googleId: profile.id,
+        };
+
+        const providersCollection = admin.firestore().collection('providers');
+        const newProviderRef = await providersCollection.add(providerData);
+        return newProviderRef.id;
+    }
+
+    static async createProviderFromApple(profile) {
+        const existingProviderByAppleId = await this.getProviderByField('appleId', profile.id);
+        if (existingProviderByAppleId) {
+            return existingProviderByAppleId;
+        }
+
+        const providerData = {
+            username: profile.name,
+            email: profile.email,
+            appleId: profile.id,
         };
 
         const providersCollection = admin.firestore().collection('providers');

@@ -94,7 +94,7 @@ class CustomerModel {
         }
     }
 
-    async getCustomerByField(fieldName, fieldValue) {
+    static async getCustomerByField(fieldName, fieldValue) {
         const customersCollection = admin.firestore().collection('customers');
         const querySnapshot = await customersCollection.where(fieldName, '==', fieldValue).get();
 
@@ -160,6 +160,22 @@ class CustomerModel {
         return newCustomerRef.id;
     }
 
+    static async createCustomerFromApple(profile) {
+        const existingCustomerByAppleId = await this.getCustomerByField('appleId', profile.id);
+        if (existingCustomerByAppleId) {
+            return existingCustomerByAppleId;
+        }
+
+        const customerData = {
+            username: profile.name,
+            email: profile.email,
+            appleId: profile.id,
+        };
+
+        const customersCollection = admin.firestore().collection('customers');
+        const newCustomerRef = await customersCollection.add(customerData);
+        return newCustomerRef.id;
+    }
 }
 
 module.exports = CustomerModel;
