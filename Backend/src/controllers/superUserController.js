@@ -109,4 +109,47 @@ async function getOrdersWithNoProvider(req, res) {
     }
 }
 
-module.exports = { signup, login, logout, getAllCustomers, getAllProviders, getOrdersWithNoProvider };
+async function superuserGetAllOrders(req, res) {
+    try {
+        const orders = await OrderModel.getAllOrders();
+        res.status(200).json({ orders });
+    } catch (error) {
+        console.error('Error getting all orders:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+async function superuserGetOrdersForCustomer(req, res) {
+    try {
+        const { customerId } = req.params;
+        const orders = await OrderModel.getOrdersByCustomer(customerId);
+        res.status(200).json({ orders });
+    } catch (error) {
+        console.error('Error getting orders for customer:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+async function superuserGetOrdersForProvider(req, res) {
+    try {
+        const { providerId } = req.params;
+        const orders = await OrderModel.getOrdersByProvider(providerId);
+        res.status(200).json({ orders });
+    } catch (error) {
+        console.error('Error getting orders for provider:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+
+module.exports = {
+    signup,
+    login,
+    logout,
+    getAllCustomers,
+    getAllProviders,
+    getOrdersWithNoProvider,
+    superuserGetAllOrders,
+    superuserGetOrdersForCustomer,
+    superuserGetOrdersForProvider
+};

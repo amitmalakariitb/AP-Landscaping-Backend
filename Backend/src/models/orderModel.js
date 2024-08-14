@@ -100,15 +100,26 @@ class OrderModel {
             const timestamp = admin.firestore.Timestamp.fromDate(currentDate);
             const snapshot = await db.collection('orders')
                 .where('customerId', '==', customerId)
-                // .where('date', '<', timestamp.toDate().toISOString())
                 .where('isFinished', '==', true)
-                .where('isCancelled', '==', true)
                 .get();
+
             const pastOrders = [];
             snapshot.forEach(doc => {
                 const orderData = doc.data();
                 orderData.id = doc.id;
                 pastOrders.push(orderData);
+            });
+            const cancelledSnapshot = await db.collection('orders')
+                .where('customerId', '==', customerId)
+                .where('isCancelled', '==', true)
+                .get();
+
+            cancelledSnapshot.forEach(doc => {
+                const orderData = doc.data();
+                orderData.id = doc.id;
+                if (!pastOrders.some(order => order.id === orderData.id)) {
+                    pastOrders.push(orderData);
+                }
             });
 
             return pastOrders;
@@ -117,6 +128,7 @@ class OrderModel {
             throw error;
         }
     }
+
 
 
     static async getUpcomingOrdersByCustomer(customerId) {
@@ -167,13 +179,9 @@ class OrderModel {
 
     static async getPastOrdersByProvider(providerId) {
         try {
-            const currentDate = new Date();
-            const timestamp = admin.firestore.Timestamp.fromDate(currentDate);
             const snapshot = await db.collection('orders')
                 .where('providerId', '==', providerId)
-                // .where('date', '<', timestamp.toDate().toISOString())
                 .where('isFinished', '==', true)
-                .where('isCancelled', '==', true)
                 .get();
 
             const pastOrders = [];
@@ -183,12 +191,26 @@ class OrderModel {
                 pastOrders.push(orderData);
             });
 
+            const cancelledSnapshot = await db.collection('orders')
+                .where('providerId', '==', providerId)
+                .where('isCancelled', '==', true)
+                .get();
+
+            cancelledSnapshot.forEach(doc => {
+                const orderData = doc.data();
+                orderData.id = doc.id;
+                if (!pastOrders.some(order => order.id === orderData.id)) {
+                    pastOrders.push(orderData);
+                }
+            });
+
             return pastOrders;
         } catch (error) {
             console.error('Error getting past orders by provider:', error);
             throw error;
         }
     }
+
 
 
     static async getUpcomingOrdersByProvider(providerId) {
@@ -231,6 +253,22 @@ class OrderModel {
             return ordersWithNoProvider;
         } catch (error) {
             console.error('Error getting orders with no provider:', error);
+            throw error;
+        }
+    }
+
+    static async getAllOrders() {
+        try {
+            const snapshot = await db.collection('orders').get();
+            const orders = [];
+            snapshot.forEach(doc => {
+                const orderData = doc.data();
+                orderData.id = doc.id;
+                orders.push(orderData);
+            });
+            return orders;
+        } catch (error) {
+            console.error('Error getting all orders:', error);
             throw error;
         }
     }
